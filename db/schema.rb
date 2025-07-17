@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_16_093703) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_17_022305) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -18,6 +18,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_16_093703) do
     t.datetime "updated_at", null: false
     t.bigint "parent_id"
     t.index ["parent_id"], name: "index_categories_on_parent_id"
+  end
+
+  create_table "category_product_options", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "product_option_id", null: false
+    t.index ["category_id", "product_option_id"], name: "idx_on_category_id_product_option_id_acc37be214", unique: true
+    t.index ["category_id"], name: "index_category_product_options_on_category_id"
+    t.index ["product_option_id"], name: "index_category_product_options_on_product_option_id"
   end
 
   create_table "permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -39,8 +47,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_16_093703) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "category_id"
-    t.index ["category_id"], name: "index_product_options_on_category_id"
   end
 
   create_table "product_reviews", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -121,8 +127,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_16_093703) do
   end
 
   add_foreign_key "categories", "categories", column: "parent_id", on_delete: :cascade
+  add_foreign_key "category_product_options", "categories"
+  add_foreign_key "category_product_options", "product_options"
   add_foreign_key "product_option_values", "product_options"
-  add_foreign_key "product_options", "categories", on_delete: :cascade
   add_foreign_key "product_reviews", "product_variants"
   add_foreign_key "product_reviews", "users"
   add_foreign_key "product_variants", "products"

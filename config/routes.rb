@@ -8,8 +8,13 @@ Rails.application.routes.draw do
 
       get "users/me", to: "users#me"
       put "users/me", to: "users#update_me"
-
       resources :users, only: [ :index, :show, :destroy ]
+
+      resources :categories, only: [ :index, :create, :update, :destroy ] do
+        resources :product_options, only: [ :index, :create, :destroy ]
+      end
+
+      delete "product_options/:id", to: "product_options#delete_option"
 
     end
   end

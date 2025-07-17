@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApplicationController
-  before_action -> { authorize!("manage_users") }, only: %i[index show]
+  before_action -> { authorize!("manage_system") }, only: %i[index show]
   before_action :set_user, only: %i[show destroy]
 
   # GET /api/v1/users/me

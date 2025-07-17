@@ -1,9 +1,9 @@
-# Clear existing data (optional)
 # === Clear existing data in correct order ===
 VariantOptionValue.delete_all
 ProductReview.delete_all
 ProductVariant.delete_all
 ProductOptionValue.delete_all
+CategoryProductOption.delete_all
 ProductOption.delete_all
 Product.delete_all
 
@@ -12,20 +12,18 @@ Category.where(parent_id: nil).delete_all
 
 UserRole.delete_all
 RolePermission.delete_all
-
 Permission.delete_all
 Role.delete_all
 User.delete_all
 
-
-# Create Permissions
+# === Create Permissions ===
 permissions = {
   purchase_items: Permission.create!(name: "purchase_items"),
   manage_store: Permission.create!(name: "manage_store"),
   manage_system: Permission.create!(name: "manage_system")
 }
 
-# Create Roles and Assign Permissions
+# === Create Roles and Assign Permissions ===
 buyer = Role.create!(name: "buyer")
 buyer.permissions << permissions[:purchase_items]
 
@@ -35,7 +33,7 @@ owner.permissions << permissions[:manage_store]
 admin = Role.create!(name: "admin")
 admin.permissions << permissions.values
 
-# Create Users and Assign Roles
+# === Create Users and Assign Roles ===
 buyer_user = User.create!(
   name: "Alice Buyer",
   email: "alice@example.com",
@@ -88,43 +86,60 @@ end
 electronics = Category.create!(name: "Electronics", description: "Electronic Devices")
 smartphones = Category.create!(name: "Smartphones", description: "Mobile phones", parent_id: electronics.id)
 laptops = Category.create!(name: "Laptops", description: "Portable computers", parent_id: electronics.id)
-# Subcategories for Smartphones
+
 iphone = Category.create!(name: "iPhone", description: "Apple smartphones", parent_id: smartphones.id)
 android = Category.create!(name: "Android", description: "Android smartphones", parent_id: smartphones.id)
 
-# Subcategories for Laptops
 macbook = Category.create!(name: "MacBook", description: "Apple laptops", parent_id: laptops.id)
 windows = Category.create!(name: "Windows Laptops", description: "Windows OS laptops", parent_id: laptops.id)
-
 
 fashion = Category.create!(name: "Fashion", description: "Clothing & Accessories")
 tshirts = Category.create!(name: "T-Shirts", description: "T-shirt collection", parent_id: fashion.id)
 menswear = Category.create!(name: "Men's Wear", description: "For men", parent_id: tshirts.id)
 womenswear = Category.create!(name: "Women's Wear", description: "For women", parent_id: tshirts.id)
 
-# === Helper Methods ===
+# === Helpers ===
+
+def add_category_options(category, option_defs)
+  option_defs.each do |opt|
+    product_option = ProductOption.find_or_create_by!(name: opt[:name])
+
+    unless category.product_options.exists?(product_option.id)
+      CategoryProductOption.create!(category: category, product_option: product_option)
+    end
+
+    opt[:values].each do |val|
+      ProductOptionValue.find_or_create_by!(product_option: product_option, value: val)
+    end
+  end
+
+  # Add shared "Type" option to all categories
+  type_option = ProductOption.find_or_create_by!(name: "Type")
+  unless category.product_options.exists?(type_option.id)
+    CategoryProductOption.create!(category: category, product_option: type_option)
+  end
+end
 
 def create_product_with_variants(owner:, category:, name:, desc:, options:)
   product = Product.create!(
     name: name,
     description: desc,
-    owner:,
-    category:
+    owner: owner,
+    category: category
   )
 
+  add_category_options(category, options)
+
   option_records = options.map do |opt|
-    po = ProductOption.create!(name: opt[:name], product:)
-    opt[:values].map do |val|
-      ProductOptionValue.create!(value: val, product_option: po)
-    end
+    product_option = ProductOption.find_by!(name: opt[:name])
+    opt[:values].map { |val| ProductOptionValue.find_by!(product_option: product_option, value: val) }
   end
 
+  combinations = option_records[0].product(*option_records[1..])
 
-  # Generate cartesian product of all possible value combinations
-  value_combinations = option_records[0].product(*option_records[1..])
-  value_combinations.each_with_index do |combo, i|
+  combinations.each_with_index do |combo, i|
     variant = ProductVariant.create!(
-      product:,
+      product: product,
       sku: "#{product.name.parameterize}-#{i}",
       price: rand(500..1500),
       stock_quantity: rand(10..50)
@@ -139,10 +154,9 @@ def create_product_with_variants(owner:, category:, name:, desc:, options:)
   end
 end
 
-# === Seed Products ===
-
+# === Products ===
 create_product_with_variants(
-  owner: owners[0], # Daisy
+  owner: owners[0],
   category: iphone,
   name: "iPhone 15",
   desc: "Latest Apple iPhone with A17 chip",
@@ -164,7 +178,7 @@ create_product_with_variants(
 )
 
 create_product_with_variants(
-  owner: owners[1], # Evan
+  owner: owners[1],
   category: android,
   name: "Pixel 8",
   desc: "Android flagship phone from Google",
@@ -185,9 +199,8 @@ create_product_with_variants(
   ]
 )
 
-
 create_product_with_variants(
-  owner: owners[2], # Fiona
+  owner: owners[2],
   category: menswear,
   name: "Men's Classic Tee",
   desc: "Comfy cotton T-shirt for men",
@@ -198,7 +211,7 @@ create_product_with_variants(
 )
 
 create_product_with_variants(
-  owner: owners[3], # Grace
+  owner: owners[3],
   category: womenswear,
   name: "Women's V-Neck Tee",
   desc: "Stylish T-shirt with v-neck cut",
@@ -208,5 +221,4 @@ create_product_with_variants(
   ]
 )
 
-puts "✅ Extra seed: categories, 4 owners, 6 products with options & variants"
-
+puts "✅ Extra seed: categories, 4 owners, 6 products with shared options & variants"
