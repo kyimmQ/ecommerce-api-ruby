@@ -1,0 +1,212 @@
+# Clear existing data (optional)
+# === Clear existing data in correct order ===
+VariantOptionValue.delete_all
+ProductReview.delete_all
+ProductVariant.delete_all
+ProductOptionValue.delete_all
+ProductOption.delete_all
+Product.delete_all
+
+Category.where.not(parent_id: nil).delete_all
+Category.where(parent_id: nil).delete_all
+
+UserRole.delete_all
+RolePermission.delete_all
+
+Permission.delete_all
+Role.delete_all
+User.delete_all
+
+
+# Create Permissions
+permissions = {
+  purchase_items: Permission.create!(name: "purchase_items"),
+  manage_store: Permission.create!(name: "manage_store"),
+  manage_system: Permission.create!(name: "manage_system")
+}
+
+# Create Roles and Assign Permissions
+buyer = Role.create!(name: "buyer")
+buyer.permissions << permissions[:purchase_items]
+
+owner = Role.create!(name: "owner")
+owner.permissions << permissions[:manage_store]
+
+admin = Role.create!(name: "admin")
+admin.permissions << permissions.values
+
+# Create Users and Assign Roles
+buyer_user = User.create!(
+  name: "Alice Buyer",
+  email: "alice@example.com",
+  password: "password",
+  phone: "1234567890",
+  address: "123 Market St"
+)
+UserRole.create!(user: buyer_user, role: buyer)
+
+owner_user = User.create!(
+  name: "Bob Owner",
+  email: "bob@example.com",
+  password: "password",
+  phone: "2345678901",
+  address: "456 Store Ave"
+)
+UserRole.create!(user: owner_user, role: owner)
+UserRole.create!(user: owner_user, role: buyer)
+
+admin_user = User.create!(
+  name: "Carol Admin",
+  email: "carol@example.com",
+  password: "password",
+  phone: "3456789012",
+  address: "789 Admin Blvd"
+)
+UserRole.create!(user: admin_user, role: admin)
+
+puts "✅ Seed completed: 3 roles, 5 permissions, 3 users with roles assigned."
+
+# === Additional Owners ===
+owners = [
+  { name: "Daisy iSeller", email: "daisy@apple.com" },
+  { name: "Evan Droid", email: "evan@android.com" },
+  { name: "Fiona Men's Fashion", email: "fiona@menswear.com" },
+  { name: "Grace Women's Fashion", email: "grace@womenswear.com" }
+].map do |data|
+  user = User.create!(
+    name: data[:name],
+    email: data[:email],
+    password: "password",
+    phone: "0000000000",
+    address: "Somewhere"
+  )
+  UserRole.create!(user:, role: owner)
+  user
+end
+
+# === Categories ===
+electronics = Category.create!(name: "Electronics", description: "Electronic Devices")
+smartphones = Category.create!(name: "Smartphones", description: "Mobile phones", parent_id: electronics.id)
+laptops = Category.create!(name: "Laptops", description: "Portable computers", parent_id: electronics.id)
+# Subcategories for Smartphones
+iphone = Category.create!(name: "iPhone", description: "Apple smartphones", parent_id: smartphones.id)
+android = Category.create!(name: "Android", description: "Android smartphones", parent_id: smartphones.id)
+
+# Subcategories for Laptops
+macbook = Category.create!(name: "MacBook", description: "Apple laptops", parent_id: laptops.id)
+windows = Category.create!(name: "Windows Laptops", description: "Windows OS laptops", parent_id: laptops.id)
+
+
+fashion = Category.create!(name: "Fashion", description: "Clothing & Accessories")
+tshirts = Category.create!(name: "T-Shirts", description: "T-shirt collection", parent_id: fashion.id)
+menswear = Category.create!(name: "Men's Wear", description: "For men", parent_id: tshirts.id)
+womenswear = Category.create!(name: "Women's Wear", description: "For women", parent_id: tshirts.id)
+
+# === Helper Methods ===
+
+def create_product_with_variants(owner:, category:, name:, desc:, options:)
+  product = Product.create!(
+    name: name,
+    description: desc,
+    owner:,
+    category:
+  )
+
+  option_records = options.map do |opt|
+    po = ProductOption.create!(name: opt[:name], product:)
+    opt[:values].map do |val|
+      ProductOptionValue.create!(value: val, product_option: po)
+    end
+  end
+
+
+  # Generate cartesian product of all possible value combinations
+  value_combinations = option_records[0].product(*option_records[1..])
+  value_combinations.each_with_index do |combo, i|
+    variant = ProductVariant.create!(
+      product:,
+      sku: "#{product.name.parameterize}-#{i}",
+      price: rand(500..1500),
+      stock_quantity: rand(10..50)
+    )
+
+    combo.each do |opt_val|
+      VariantOptionValue.create!(
+        product_variant: variant,
+        product_option_value: opt_val
+      )
+    end
+  end
+end
+
+# === Seed Products ===
+
+create_product_with_variants(
+  owner: owners[0], # Daisy
+  category: iphone,
+  name: "iPhone 15",
+  desc: "Latest Apple iPhone with A17 chip",
+  options: [
+    { name: "Color", values: ["Black", "White"] },
+    { name: "Storage", values: ["128GB", "256GB"] }
+  ]
+)
+
+create_product_with_variants(
+  owner: owners[0],
+  category: macbook,
+  name: "MacBook Pro 14\"",
+  desc: "Apple Silicon laptop for pros",
+  options: [
+    { name: "RAM", values: ["16GB", "32GB"] },
+    { name: "Storage", values: ["512GB", "1TB"] }
+  ]
+)
+
+create_product_with_variants(
+  owner: owners[1], # Evan
+  category: android,
+  name: "Pixel 8",
+  desc: "Android flagship phone from Google",
+  options: [
+    { name: "Color", values: ["Obsidian", "Hazel"] },
+    { name: "Storage", values: ["128GB", "256GB"] }
+  ]
+)
+
+create_product_with_variants(
+  owner: owners[1],
+  category: windows,
+  name: "Dell XPS 13",
+  desc: "High-end Windows laptop",
+  options: [
+    { name: "RAM", values: ["8GB", "16GB"] },
+    { name: "Storage", values: ["256GB", "512GB"] }
+  ]
+)
+
+
+create_product_with_variants(
+  owner: owners[2], # Fiona
+  category: menswear,
+  name: "Men's Classic Tee",
+  desc: "Comfy cotton T-shirt for men",
+  options: [
+    { name: "Color", values: ["Black", "Gray"] },
+    { name: "Size", values: ["M", "L", "XL"] }
+  ]
+)
+
+create_product_with_variants(
+  owner: owners[3], # Grace
+  category: womenswear,
+  name: "Women's V-Neck Tee",
+  desc: "Stylish T-shirt with v-neck cut",
+  options: [
+    { name: "Color", values: ["Red", "White"] },
+    { name: "Size", values: ["S", "M", "L"] }
+  ]
+)
+
+puts "✅ Extra seed: categories, 4 owners, 6 products with options & variants"
+
