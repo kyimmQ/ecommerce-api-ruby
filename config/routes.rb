@@ -16,6 +16,15 @@ Rails.application.routes.draw do
 
       delete "product_options/:id", to: "product_options#delete_option"
 
+      resources :products, only: [ :index, :show, :destroy, :create, :update ] do
+        resource :product_variants, path: "variants", only: [ :create, :update, :destroy ]
+      end
+
+      get "shop/:shop_id/products", to: "products#shop_products"
+
+      resources :product_options, only: [] do
+        resources :product_option_values, path: "values", only: [ :index, :create, :update, :destroy ]
+      end
     end
   end
 

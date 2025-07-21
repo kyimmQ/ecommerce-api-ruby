@@ -41,6 +41,12 @@ class Category < ApplicationRecord
     ProductOption.find_by_sql(sql)
   end
 
+  def all_descendant_ids
+    children = Category.where(parent_id: id)
+    children_ids = children.pluck(:id)
+    children_ids + children.flat_map(&:all_descendant_ids)
+  end
+
 
 
   private

@@ -1,4 +1,6 @@
 class Api::V1::ProductOptionsController < ApplicationController
+  before_action -> { authorize!("manage_system") }, except: [ :index ]
+  before_action -> { authorize!("manage_store") }, only: [ :index ]
   before_action :set_category, except: [ :delete_option ]
   def index
     all_options = @category.all_product_options
@@ -45,6 +47,8 @@ class Api::V1::ProductOptionsController < ApplicationController
       render json: { message: "Product option not found" }, status: :not_found
     end
   end
+
+
 
   private
   def set_category
