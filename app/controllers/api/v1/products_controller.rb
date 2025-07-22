@@ -1,8 +1,9 @@
 class Api::V1::ProductsController < ApplicationController
   include OwnershipValidatable
 
-  before_action -> { authorize!("manage_products") }, except: %i[index show shop_products]
-  before_action :set_product, :validate_ownership, only: %i[show destroy update]
+  before_action -> { authorize!("manage_store") }, except: %i[index show shop_products]
+  before_action :set_product, :validate_ownership, only: %i[ destroy update ]
+  before_action :set_product, only: %i[ show ]
 
   # GET /api/v1/products
   def index
@@ -62,7 +63,7 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def create
-    product = Product.new(product_params)
+    product = Product.new(product_params.slice(:name, :description))
     product.owner = current_user
     product.category = Category.find_by(id: product_params[:category])
     if product.save

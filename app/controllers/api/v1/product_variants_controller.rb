@@ -5,18 +5,19 @@ class Api::V1::ProductVariantsController < ApplicationController
 
   def create
     variant = @product.product_variants.new(variant_params)
-    new_option_values = option_values_params[:options_id].map do |option_id|
-      product_option = ProductOption.find(option_id)
-      product_option_value = ProductOptionValue.find_by(product_option: product_option, value: option_values_params[:value])
+    puts variant.inspect
+    new_option_values = option_values_params[:type].map do |option|
+      product_option = ProductOption.find(option[:option_id])
+      product_option_value = ProductOptionValue.find_by(product_option: product_option, value: option[:value])
       if product_option_value.nil?
-        product_option_value = ProductOptionValue.create!(product_option: product_option, value: option_values_params[:value])
+        product_option_value = ProductOptionValue.create!(product_option: product_option, value: option[:value])
         unless product_option_value.save
           render json: { errors: product_option_value.errors }, status: :unprocessable_entity and return
         end
       end
       product_option_value
     end
-    variant.variant_option_values << new_option_values
+    variant.product_option_values << new_option_values
     if variant.save
       render json: { data: variant.as_json(include: { variant_option_values: { include: :product_option_value } }), message: "Variant created successfully." }, status: :created
     else
@@ -42,6 +43,6 @@ class Api::V1::ProductVariantsController < ApplicationController
   end
 
   def option_values_params
-    params.permit(:options_id, :value)
+    params.permit(type: [:option_id, :value])
   end
 end

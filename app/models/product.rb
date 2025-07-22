@@ -4,7 +4,7 @@ class Product < ApplicationRecord
 
   has_many :product_variants, dependent: :destroy
 
-  validates :name, presence: true
+  validates :name, :description, :category_id, :owner_id, presence: true
 
   def available_options
     category.all_product_options

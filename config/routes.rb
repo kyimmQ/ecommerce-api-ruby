@@ -25,6 +25,10 @@ Rails.application.routes.draw do
       resources :product_options, only: [] do
         resources :product_option_values, path: "values", only: [ :index, :create, :update, :destroy ]
       end
+
+      resources :orders, only: [ :create, :index, :show, :update ]
+      resources :cart, only: [ :create, :index, :update, :destroy ]
+      resources :cart_items, only: [ :create, :update ]
     end
   end
 
