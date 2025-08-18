@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  before_save :create_shopping_cart
+  after_create :create_shopping_cart
 
   has_secure_password
   validates :name, :address, :email, :phone, presence: true
@@ -23,11 +23,17 @@ class User < ApplicationRecord
   end
 
   def have_cart_item?(product_variant_id)
-    cart_items = shopping_cart.cart_items || []
+    cart_items = shopping_cart&.cart_items || []
     cart_items.any? { |item| item.product_variant_id == product_variant_id }
   end
 
+  def cart_items_count
+    shopping_cart&.cart_items&.sum(:quantity) || 0
+  end
+
+  private
+
   def create_shopping_cart
-    self.create_shopping_cart
+    ShoppingCart.create!(user: self) unless shopping_cart.present?
   end
 end

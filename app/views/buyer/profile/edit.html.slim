@@ -1,0 +1,48 @@
+- content_for :title, "Edit Profile - ECommerce Store"
+
+h1.mb-4
+  i.bi.bi-person-gear.me-2
+  | Edit Profile
+
+.row.justify-content-center
+  .col-lg-8
+    .card
+      .card-body
+        = form_with model: @user, url: buyer_profile_path, method: :patch, local: true, class: "needs-validation", novalidate: true do |form|
+          .row
+            .col-md-6.mb-3
+              = form.label :name, class: "form-label"
+              = form.text_field :name, class: "form-control #{'is-invalid' if @user.errors[:name].any?}", required: true
+              - if @user.errors[:name].any?
+                .invalid-feedback = @user.errors[:name].first
+              - else
+                .invalid-feedback Please provide your full name.
+            
+            .col-md-6.mb-3
+              = form.label :email, class: "form-label"
+              = form.email_field :email, class: "form-control #{'is-invalid' if @user.errors[:email].any?}", required: true
+              - if @user.errors[:email].any?
+                .invalid-feedback = @user.errors[:email].first
+              - else
+                .invalid-feedback Please provide a valid email.
+          
+          .row
+            .col-md-6.mb-3
+              = form.label :phone, class: "form-label"
+              = form.telephone_field :phone, class: "form-control #{'is-invalid' if @user.errors[:phone].any?}", required: true
+              - if @user.errors[:phone].any?
+                .invalid-feedback = @user.errors[:phone].first
+              - else
+                .invalid-feedback Please provide your phone number.
+            
+            .col-md-12.mb-3
+              = form.label :address, class: "form-label"
+              = form.text_area :address, class: "form-control #{'is-invalid' if @user.errors[:address].any?}", rows: 3, required: true
+              - if @user.errors[:address].any?
+                .invalid-feedback = @user.errors[:address].first
+              - else
+                .invalid-feedback Please provide your address.
+          
+          .d-flex.gap-2
+            = form.submit "Update Profile", class: "btn btn-primary"
+            = link_to "Cancel", buyer_profile_path, class: "btn btn-outline-secondary"

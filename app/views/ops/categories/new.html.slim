@@ -1,0 +1,32 @@
+- content_for :page_title, "Add New Category"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h2.mb-0 Add New Category
+  = link_to "Back to Categories", ops_categories_path, class: "btn btn-outline-secondary"
+
+.row.justify-content-center
+  .col-lg-8
+    .card
+      .card-body
+        = form_with model: @category, url: ops_categories_path, method: :post, local: true, class: "needs-validation", novalidate: true do |form|
+          .mb-3
+            = form.label :name, class: "form-label"
+            = form.text_field :name, class: "form-control #{'is-invalid' if @category.errors[:name].any?}", required: true
+            - if @category.errors[:name].any?
+              .invalid-feedback = @category.errors[:name].first
+            - else
+              .invalid-feedback Please provide a category name.
+          
+          .mb-3
+            = form.label :parent_id, "Parent Category", class: "form-label"
+            = form.select :parent_id, options_from_collection_for_select(@parent_categories, :id, :name, @category.parent_id), { prompt: "Select a parent category (optional)" }, { class: "form-select" }
+            .form-text Leave empty to create a root category.
+          
+          .mb-3
+            = form.label :description, class: "form-label"
+            = form.text_area :description, class: "form-control", rows: 4
+            .form-text Optional description for the category.
+          
+          .d-flex.gap-2
+            = form.submit "Create Category", class: "btn btn-primary"
+            = link_to "Cancel", ops_categories_path, class: "btn btn-outline-secondary"

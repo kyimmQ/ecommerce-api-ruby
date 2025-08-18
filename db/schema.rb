@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_22_021456) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_17_102503) do
   create_table "cart_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "shopping_cart_id", null: false
     t.bigint "product_variant_id", null: false
@@ -107,6 +107,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_22_021456) do
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "image_url"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["owner_id"], name: "index_products_on_owner_id"
   end

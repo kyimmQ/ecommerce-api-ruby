@@ -1,0 +1,46 @@
+- content_for :page_title, "Add New Product"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h2.mb-0 Add New Product
+  = link_to "Back to Products", ops_products_path, class: "btn btn-outline-secondary"
+
+.row.justify-content-center
+  .col-lg-8
+    .card
+      .card-body
+        = form_with model: @product, url: ops_products_path, method: :post, local: true, class: "needs-validation", novalidate: true do |form|
+          .mb-3
+            = form.label :name, class: "form-label"
+            = form.text_field :name, class: "form-control #{'is-invalid' if @product.errors[:name].any?}", required: true
+            - if @product.errors[:name].any?
+              .invalid-feedback = @product.errors[:name].first
+            - else
+              .invalid-feedback Please provide a product name.
+          
+          .mb-3
+            = form.label :category_id, "Category", class: "form-label"
+            = form.select :category_id, options_from_collection_for_select(@categories, :id, :name, @product.category_id), { prompt: "Select a category" }, { class: "form-select #{'is-invalid' if @product.errors[:category].any?}", required: true }
+            - if @product.errors[:category].any?
+              .invalid-feedback = @product.errors[:category].first
+            - else
+              .invalid-feedback Please select a category.
+          
+          .mb-3
+            = form.label :description, class: "form-label"
+            = form.text_area :description, class: "form-control #{'is-invalid' if @product.errors[:description].any?}", rows: 4, required: true
+            - if @product.errors[:description].any?
+              .invalid-feedback = @product.errors[:description].first
+            - else
+              .invalid-feedback Please provide a product description.
+          
+          .mb-3
+            = form.label :image_url, "Product Image URL", class: "form-label"
+            = form.url_field :image_url, class: "form-control #{'is-invalid' if @product.errors[:image_url].any?}", placeholder: "https://example.com/image.jpg"
+            - if @product.errors[:image_url].any?
+              .invalid-feedback = @product.errors[:image_url].first
+            - else
+              .form-text Optional: URL to product image
+          
+          .d-flex.gap-2
+            = form.submit "Create Product", class: "btn btn-primary"
+            = link_to "Cancel", ops_products_path, class: "btn btn-outline-secondary"

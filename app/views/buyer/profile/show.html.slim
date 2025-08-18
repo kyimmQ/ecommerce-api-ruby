@@ -1,0 +1,71 @@
+- content_for :title, "My Profile - ECommerce Store"
+
+h1.mb-4
+  i.bi.bi-person-circle.me-2
+  | My Profile
+
+.row
+  .col-lg-8
+    .card
+      .card-header.d-flex.justify-content-between.align-items-center
+        h5.mb-0 Personal Information
+        = link_to "Edit Profile", buyer_profile_edit_path, class: "btn btn-outline-primary btn-sm"
+      
+      .card-body
+        .row
+          .col-md-6.mb-3
+            h6.text-muted Name
+            p.mb-0 = @user.name
+          
+          .col-md-6.mb-3
+            h6.text-muted Email
+            p.mb-0 = @user.email
+          
+          .col-md-6.mb-3
+            h6.text-muted Phone
+            p.mb-0 = @user.phone
+          
+          .col-md-12.mb-3
+            h6.text-muted Address
+            p.mb-0 = @user.address
+  
+  .col-lg-4
+    / Account Stats
+    .card.mb-4
+      .card-header
+        h5.mb-0 Account Statistics
+      .card-body
+        .d-flex.justify-content-between.align-items-center.mb-3
+          .d-flex.align-items-center
+            i.bi.bi-receipt.text-primary.me-2
+            span Total Orders
+          strong = current_buyer.orders.count
+        
+        .d-flex.justify-content-between.align-items-center.mb-3
+          .d-flex.align-items-center
+            i.bi.bi-currency-dollar.text-success.me-2
+            span Total Spent
+          strong $#{number_with_precision(current_buyer.orders.sum(:total_price), precision: 2)}
+        
+        .d-flex.justify-content-between.align-items-center
+          .d-flex.align-items-center
+            i.bi.bi-calendar.text-info.me-2
+            span Member Since
+          strong = current_buyer.created_at.strftime("%b %Y")
+    
+    / Quick Actions
+    .card
+      .card-header
+        h5.mb-0 Quick Actions
+      .card-body
+        = link_to buyer_orders_path, class: "btn btn-outline-primary w-100 mb-2"
+          i.bi.bi-receipt.me-2
+          | View Orders
+        
+        = link_to buyer_cart_path, class: "btn btn-outline-success w-100 mb-2"
+          i.bi.bi-cart3.me-2
+          | View Cart
+        
+        = link_to buyer_products_path, class: "btn btn-outline-info w-100"
+          i.bi.bi-shop.me-2
+          | Continue Shopping

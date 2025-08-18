@@ -1,0 +1,52 @@
+- content_for :title, "My Orders - ECommerce Store"
+
+h1.mb-4
+  i.bi.bi-receipt.me-2
+  | My Orders
+
+- if @orders.any?
+  - @orders.each do |order|
+    .card.mb-3
+      .card-body
+        .row.align-items-center
+          .col-md-2
+            .text-center
+              h6.mb-1 Order ##{order.id}
+              small.text-muted = order.created_at.strftime("%b %d, %Y")
+          
+          .col-md-3
+            h6.mb-1 Items (#{order.order_items.sum(:quantity)})
+            - order.order_items.limit(2).each do |item|
+              small.text-muted.d-block = item.product_variant.product.name
+            - if order.order_items.count > 2
+              small.text-muted and #{order.order_items.count - 2} more...
+          
+          .col-md-2.text-center
+            - case order.status
+            - when 'pending'
+              span.badge.bg-warning.text-dark Pending
+            - when 'processing'
+              span.badge.bg-info Processing
+            - when 'shipped'
+              span.badge.bg-primary Shipped
+            - when 'delivered'
+              span.badge.bg-success Delivered
+            - when 'cancelled'
+              span.badge.bg-danger Cancelled
+            - else
+              span.badge.bg-secondary = order.status.humanize
+          
+          .col-md-2.text-center
+            strong.text-primary $#{number_with_precision(order.total_price, precision: 2)}
+          
+          .col-md-3.text-end
+            = link_to "View Details", buyer_order_path(order), class: "btn btn-outline-primary btn-sm"
+            - if order.status == 'pending'
+              = link_to "Cancel", "#", class: "btn btn-outline-danger btn-sm ms-1", onclick: "return confirm('Are you sure you want to cancel this order?')"
+
+- else
+  .text-center.py-5
+    i.bi.bi-receipt.display-1.text-muted
+    h3.mt-3 No orders yet
+    p.text-muted You haven't placed any orders yet. Start shopping!
+    = link_to "Browse Products", buyer_products_path, class: "btn btn-primary btn-lg"

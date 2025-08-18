@@ -1,0 +1,58 @@
+- content_for :page_title, "Users Management"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h2.mb-0 Users Management
+
+/ Filters
+.card.mb-4
+  .card-body
+    = form_with url: ops_users_path, method: :get, local: true, class: "row g-3" do |form|
+      .col-md-4
+        = form.text_field :search, placeholder: "Search users...", value: params[:search], class: "form-control"
+      .col-md-3
+        = form.select :role, options_for_select([['All Roles', ''], ['Admin', 'admin'], ['Buyer', 'buyer']], params[:role]), {}, { class: "form-select" }
+      .col-md-2
+        = form.submit "Filter", class: "btn btn-outline-primary w-100"
+      .col-md-3
+        = link_to "Clear Filters", ops_users_path, class: "btn btn-outline-secondary w-100"
+
+/ Users Table
+.card
+  .card-body
+    - if @users.any?
+      .table-responsive
+        table.table.table-hover
+          thead
+            tr
+              th ID
+              th Name
+              th Email
+              th Role
+              th Phone
+              th Joined
+              th Actions
+          tbody
+            - @users.each do |user|
+              tr
+                td = user.id
+                td
+                  = link_to user.name, ops_user_path(user), class: "text-decoration-none fw-bold"
+                td = user.email
+                td
+                  - if user.roles.any?
+                    - user.roles.each do |role|
+                      span.badge.bg-primary.me-1 = role.name.humanize
+                  - else
+                    span.text-muted No role
+                td = user.phone || "N/A"
+                td = user.created_at.strftime("%m/%d/%Y")
+                td
+                  .btn-group role="group"
+                    = link_to "View", ops_user_path(user), class: "btn btn-sm btn-outline-info"
+                    = link_to "Edit", edit_ops_user_path(user), class: "btn btn-sm btn-outline-primary"
+                    = link_to "Delete", ops_user_path(user), method: :delete, class: "btn btn-sm btn-outline-danger", confirm: "Are you sure?"
+    - else
+      .text-center.py-5
+        i.bi.bi-people.display-1.text-muted
+        h4.mt-3 No users found
+        p.text-muted Users will appear here when they register

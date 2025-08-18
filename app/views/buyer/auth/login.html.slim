@@ -1,0 +1,35 @@
+- content_for :title, "Login - ECommerce Store"
+
+.row.justify-content-center
+  .col-md-6.col-lg-4
+    .card.shadow
+      .card-body.p-4
+        .text-center.mb-4
+          h2.card-title Login to Your Account
+          p.text-muted Welcome back! Please sign in to continue.
+        
+        = form_with url: buyer_login_path, method: :post, local: true, class: "needs-validation", novalidate: true do |form|
+          .mb-3
+            = form.label :email, class: "form-label"
+            = form.email_field :email, class: "form-control", placeholder: "Enter your email", required: true
+            .invalid-feedback Please provide a valid email.
+          
+          .mb-3
+            = form.label :password, class: "form-label"
+            = form.password_field :password, class: "form-control", placeholder: "Enter your password", required: true
+            .invalid-feedback Please provide your password.
+          
+          .mb-3.form-check
+            input.form-check-input type="checkbox" id="remember_me"
+            label.form-check-label for="remember_me"
+              | Remember me
+          
+          .d-grid
+            = form.submit "Sign In", class: "btn btn-primary btn-lg"
+        
+        hr.my-4
+        
+        .text-center
+          p.mb-0
+            | Don't have an account? 
+            = link_to "Sign up here", buyer_register_path, class: "text-decoration-none"

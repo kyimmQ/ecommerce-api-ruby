@@ -1,0 +1,164 @@
+- content_for :title, "Order ##{@order.id} - ECommerce Store"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h1
+    i.bi.bi-receipt.me-2
+    | Order ##{@order.id}
+  
+  - case @order.status
+  - when 'pending'
+    span.badge.bg-warning.text-dark.fs-6 Pending
+  - when 'paid'
+    span.badge.bg-info.fs-6 Paid
+  - when 'completed'
+    span.badge.bg-success.fs-6 Completed
+  - when 'cancelled'
+    span.badge.bg-danger.fs-6 Cancelled
+  - when 'returned'
+    span.badge.bg-secondary.fs-6 Returned
+  - else
+    span.badge.bg-secondary.fs-6 = @order.status&.humanize || "Unknown"
+
+.row
+  .col-lg-8
+    / Order Items
+    .card.mb-4
+      .card-header
+        h5.mb-0 Order Items
+      .card-body
+        - @order_items.each do |item|
+          .row.align-items-center.mb-3.pb-3.border-bottom
+            .col-md-2
+              .rounded style="height: 80px; overflow: hidden;"
+                - if item.product_variant.product.image_url.present?
+                  img src=item.product_variant.product.image_url alt=item.product_variant.product.name class="w-100 h-100" style="object-fit: cover;"
+                - else
+                  .bg-light.d-flex.align-items-center.justify-content-center.h-100
+                    i.bi.bi-image.text-muted
+            
+            .col-md-5
+              h6.mb-1 = item.product_variant.product.name
+              p.text-muted.small.mb-1 = item.product_variant.product.category.name
+              - item.product_variant.variant_option_values.each do |vov|
+                span.badge.bg-light.text-dark.me-1.small = "#{vov.product_option_value.product_option.name}: #{vov.product_option_value.value}"
+            
+            .col-md-2.text-center
+              span.text-muted Qty: #{item.quantity}
+            
+            .col-md-1.text-center
+              span $#{number_with_precision(item.price, precision: 2)}
+            
+            .col-md-2.text-end
+              strong $#{number_with_precision(item.quantity * item.price, precision: 2)}
+    
+    / Order Timeline
+    .card
+      .card-header
+        h5.mb-0 Order Status
+      .card-body
+        .timeline
+          .timeline-item.active
+            .timeline-marker.bg-success
+            .timeline-content
+              h6 Order Placed
+              small.text-muted = @order.created_at.strftime("%B %d, %Y at %I:%M %p")
+          
+          - if ['paid', 'completed'].include?(@order.status)
+            .timeline-item.active
+              .timeline-marker.bg-info
+              .timeline-content
+                h6 Paid
+                small.text-muted Payment has been processed
+          
+          - if @order.status == 'completed'
+            .timeline-item.active
+              .timeline-marker.bg-success
+              .timeline-content
+                h6 Completed
+                small.text-muted Order has been completed
+          
+          - if @order.status == 'cancelled'
+            .timeline-item.cancelled
+              .timeline-marker.bg-danger
+              .timeline-content
+                h6 Cancelled
+                small.text-muted Order was cancelled
+  
+  .col-lg-4
+    / Order Summary
+    .card.mb-4
+      .card-header
+        h5.mb-0 Order Summary
+      .card-body
+        .d-flex.justify-content-between.mb-2
+          span Subtotal
+          span $#{number_with_precision(@order.total_price, precision: 2)}
+        
+        .d-flex.justify-content-between.mb-2
+          span Shipping
+          span Free
+        
+        .d-flex.justify-content-between.mb-2
+          span Tax
+          span $0.00
+        
+        hr
+        
+        .d-flex.justify-content-between.mb-3
+          strong Total
+          strong.text-primary $#{number_with_precision(@order.total_price, precision: 2)}
+    
+    / Customer Information
+    .card
+      .card-header
+        h5.mb-0 Customer Information
+      .card-body
+        h6 = current_buyer.name
+        p.mb-1 = current_buyer.email
+        p.mb-1 = current_buyer.phone
+        hr
+        h6 Shipping Address
+        p.mb-0 = current_buyer.address
+
+.mt-4
+  = link_to "Back to Orders", buyer_orders_path, class: "btn btn-outline-secondary"
+  = link_to "Continue Shopping", buyer_products_path, class: "btn btn-primary ms-2"
+
+css:
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }
+  
+  .timeline-item.active .timeline-marker {
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+  }
+  
+  .timeline-item.cancelled .timeline-marker {
+    box-shadow: 0 0 0 3px rgba(220,53,69,0.25);
+  }

@@ -1,0 +1,152 @@
+- content_for :page_title, "Dashboard"
+
+/ Stats Cards
+.row.mb-4
+  .col-lg-3.col-md-6.mb-3
+    .card.bg-primary.text-white
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h4.mb-0 = @total_users
+            p.mb-0 Total Users
+          i.bi.bi-people.display-6
+  
+  .col-lg-3.col-md-6.mb-3
+    .card.bg-success.text-white
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h4.mb-0 = @total_products
+            p.mb-0 Total Products
+          i.bi.bi-box.display-6
+  
+  .col-lg-3.col-md-6.mb-3
+    .card.bg-info.text-white
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h4.mb-0 = @total_orders
+            p.mb-0 Total Orders
+          i.bi.bi-receipt.display-6
+  
+  .col-lg-3.col-md-6.mb-3
+    .card.bg-warning.text-white
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h4.mb-0 = @total_categories
+            p.mb-0 Categories
+          i.bi.bi-tags.display-6
+
+/ Revenue and Pending Orders
+.row.mb-4
+  .col-lg-6.mb-3
+    .card.border-success
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h5.text-success Monthly Revenue
+            h3.mb-0 $#{number_with_precision(@monthly_revenue, precision: 2)}
+          i.bi.bi-currency-dollar.display-6.text-success
+  
+  .col-lg-6.mb-3
+    .card.border-warning
+      .card-body
+        .d-flex.justify-content-between.align-items-center
+          div
+            h5.text-warning Pending Orders
+            h3.mb-0 = @pending_orders
+          i.bi.bi-clock.display-6.text-warning
+
+.row
+  .col-lg-8
+    / Recent Orders
+    .card
+      .card-header.d-flex.justify-content-between.align-items-center
+        h5.mb-0 Recent Orders
+        = link_to "View All", ops_orders_path, class: "btn btn-outline-primary btn-sm"
+      
+      .card-body
+        - if @recent_orders.any?
+          .table-responsive
+            table.table.table-hover
+              thead
+                tr
+                  th Order ID
+                  th Customer
+                  th Items
+                  th Total
+                  th Status
+                  th Date
+              tbody
+                - @recent_orders.each do |order|
+                  tr
+                    td
+                      = link_to "##{order.id}", ops_order_path(order), class: "text-decoration-none"
+                    td = order.user.name
+                    td = order.order_items.sum(:quantity)
+                    td $#{number_with_precision(order.total_price, precision: 2)}
+                    td
+                      - case order.status
+                      - when 'pending'
+                        span.badge.bg-warning.text-dark Pending
+                      - when 'paid'
+                        span.badge.bg-info Paid
+                      - when 'completed'
+                        span.badge.bg-success Completed
+                      - when 'cancelled'
+                        span.badge.bg-danger Cancelled
+                      - when 'returned'
+                        span.badge.bg-secondary Returned
+                      - else
+                        span.badge.bg-secondary = order.status&.humanize || "Unknown"
+                    td = order.created_at.strftime("%m/%d/%Y")
+        - else
+          .text-center.py-4
+            i.bi.bi-receipt.display-4.text-muted
+            p.text-muted.mt-2 No orders yet
+  
+  .col-lg-4
+    / Top Products
+    .card
+      .card-header
+        h5.mb-0 Top Products
+      .card-body
+        - if @top_products.any?
+          - @top_products.each_with_index do |product, index|
+            .d-flex.align-items-center.mb-3
+              .flex-shrink-0
+                .bg-primary.text-white.rounded-circle.d-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
+                  = index + 1
+              .flex-grow-1.ms-3
+                h6.mb-0 = truncate(product.name, length: 30)
+                small.text-muted = product.category.name
+        - else
+          .text-center.py-4
+            i.bi.bi-box.display-4.text-muted
+            p.text-muted.mt-2 No product data yet
+
+/ Quick Actions
+.row.mt-4
+  .col-12
+    .card
+      .card-header
+        h5.mb-0 Quick Actions
+      .card-body
+        .row
+          .col-md-3.mb-2
+            = link_to new_ops_product_path, class: "btn btn-outline-primary w-100"
+              i.bi.bi-plus-circle.me-2
+              | Add Product
+          .col-md-3.mb-2
+            = link_to new_ops_category_path, class: "btn btn-outline-success w-100"
+              i.bi.bi-plus-circle.me-2
+              | Add Category
+          .col-md-3.mb-2
+            = link_to ops_orders_path, class: "btn btn-outline-info w-100"
+              i.bi.bi-eye.me-2
+              | View Orders
+          .col-md-3.mb-2
+            = link_to ops_users_path, class: "btn btn-outline-warning w-100"
+              i.bi.bi-people.me-2
+              | Manage Users

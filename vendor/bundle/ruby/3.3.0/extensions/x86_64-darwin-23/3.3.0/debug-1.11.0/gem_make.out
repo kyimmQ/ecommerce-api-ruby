@@ -1,0 +1,19 @@
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/debug-1.11.0/ext/debug
+/Users/cac.lp/.rbenv/versions/3.3.8/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-3yiysy sitelibdir\=./.gem.20250817-31612-3yiysy clean
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-3yiysy sitelibdir\=./.gem.20250817-31612-3yiysy
+compiling debug.c
+compiling iseq_collector.c
+linking shared-object debug/debug.bundle
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-3yiysy sitelibdir\=./.gem.20250817-31612-3yiysy install
+/usr/bin/install -c -m 0755 debug.bundle ./.gem.20250817-31612-3yiysy/debug
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-3yiysy sitelibdir\=./.gem.20250817-31612-3yiysy clean

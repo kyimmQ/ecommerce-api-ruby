@@ -1,0 +1,92 @@
+doctype html
+html lang="en"
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+    title = content_for?(:title) ? yield(:title) : "Admin Dashboard - ECommerce"
+    
+    = csrf_meta_tags
+    = csp_meta_tag
+    
+    / Bootstrap CSS
+    link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"
+    
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = javascript_include_tag "application", "data-turbo-track": "reload"
+    
+    style
+      | .sidebar { min-height: 100vh; }
+      | .main-content { min-height: 100vh; }
+    
+  body
+    .container-fluid
+      .row
+        / Sidebar
+        .col-md-3.col-lg-2.bg-dark.sidebar.p-0
+          .d-flex.flex-column.text-white.p-3
+            = link_to ops_root_path, class: "text-white text-decoration-none mb-4"
+              h4.mb-0
+                i.bi.bi-speedometer2.me-2
+                | Admin Panel
+            
+            nav.nav.nav-pills.flex-column
+              = link_to ops_dashboard_path, class: "nav-link text-white #{'active' if current_page?(ops_dashboard_path)}"
+                i.bi.bi-house-door.me-2
+                | Dashboard
+              
+              = link_to ops_products_path, class: "nav-link text-white #{'active' if controller_name == 'products'}"
+                i.bi.bi-box.me-2
+                | Products
+              
+              = link_to ops_categories_path, class: "nav-link text-white #{'active' if controller_name == 'categories'}"
+                i.bi.bi-tags.me-2
+                | Categories
+              
+              = link_to ops_orders_path, class: "nav-link text-white #{'active' if controller_name == 'orders'}"
+                i.bi.bi-receipt.me-2
+                | Orders
+              
+              = link_to ops_users_path, class: "nav-link text-white #{'active' if controller_name == 'users'}"
+                i.bi.bi-people.me-2
+                | Users
+            
+            .mt-auto
+              hr.text-white-50
+              .dropdown
+                a.d-flex.align-items-center.text-white.text-decoration-none.dropdown-toggle href="#" data-bs-toggle="dropdown"
+                  i.bi.bi-person-circle.me-2
+                  = current_admin&.name || "Admin"
+                ul.dropdown-menu.dropdown-menu-dark
+                  li
+                    = link_to "Logout", ops_logout_path, method: :delete, class: "dropdown-item"
+        
+        / Main Content
+        .col-md-9.col-lg-10.main-content
+          / Top Navigation
+          nav.navbar.navbar-expand-lg.navbar-light.bg-light.border-bottom
+            .container-fluid
+              h1.h4.mb-0 = content_for?(:page_title) ? yield(:page_title) : "Dashboard"
+              
+              / Breadcrumb
+              - if content_for?(:breadcrumb)
+                nav aria-label="breadcrumb"
+                  = yield(:breadcrumb)
+          
+          / Flash Messages
+          - if notice
+            .alert.alert-success.alert-dismissible.fade.show.m-3
+              = notice
+              button.btn-close type="button" data-bs-dismiss="alert"
+          
+          - if alert
+            .alert.alert-danger.alert-dismissible.fade.show.m-3
+              = alert
+              button.btn-close type="button" data-bs-dismiss="alert"
+          
+          / Page Content
+          .p-4
+            = yield
+    
+    / Bootstrap JS
+    script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"

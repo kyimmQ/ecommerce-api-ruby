@@ -1,0 +1,101 @@
+- content_for :page_title, "User Details - #{@user.name}"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h2.mb-0 User Details
+  = link_to "Back to Users", ops_users_path, class: "btn btn-outline-secondary"
+
+.row
+  .col-lg-8
+    / User Information
+    .card.mb-4
+      .card-header
+        h5.mb-0 Personal Information
+      .card-body
+        .row
+          .col-md-6
+            h6 Name
+            p = @user.name
+          .col-md-6
+            h6 Email
+            p = @user.email
+        .row
+          .col-md-6
+            h6 Phone
+            p = @user.phone || "Not provided"
+          .col-md-6
+            h6 Address
+            p = @user.address || "Not provided"
+        .row
+          .col-md-6
+            h6 Joined
+            p = @user.created_at.strftime("%B %d, %Y")
+          .col-md-6
+            h6 Last Updated
+            p = @user.updated_at.strftime("%B %d, %Y")
+    
+    / User Orders (if buyer)
+    - if @user.orders.any?
+      .card
+        .card-header
+          h5.mb-0 Recent Orders
+        .card-body
+          .table-responsive
+            table.table.table-sm
+              thead
+                tr
+                  th Order ID
+                  th Total
+                  th Status
+                  th Date
+              tbody
+                - @user.orders.order(created_at: :desc).limit(10).each do |order|
+                  tr
+                    td
+                      = link_to "##{order.id}", ops_order_path(order), class: "text-decoration-none"
+                    td $#{number_with_precision(order.total_price, precision: 2)}
+                    td
+                      - case order.status
+                      - when 'pending'
+                        span.badge.bg-warning.text-dark Pending
+                      - when 'paid'
+                        span.badge.bg-info Paid
+                      - when 'completed'
+                        span.badge.bg-success Completed
+                      - when 'cancelled'
+                        span.badge.bg-danger Cancelled
+                      - when 'returned'
+                        span.badge.bg-secondary Returned
+                      - else
+                        span.badge.bg-secondary = order.status&.humanize || "Unknown"
+                    td = order.created_at.strftime("%m/%d/%Y")
+  
+  .col-lg-4
+    / User Roles
+    .card.mb-4
+      .card-header
+        h5.mb-0 User Roles
+      .card-body
+        - if @user.roles.any?
+          - @user.roles.each do |role|
+            span.badge.bg-primary.me-1.mb-1 = role.name.humanize
+        - else
+          p.text-muted No roles assigned
+    
+    / User Stats
+    .card
+      .card-header
+        h5.mb-0 User Statistics
+      .card-body
+        .d-flex.justify-content-between.mb-2
+          span Total Orders
+          strong = @user.orders.count
+        .d-flex.justify-content-between.mb-2
+          span Total Spent
+          strong $#{number_with_precision(@user.orders.sum(:total_price), precision: 2)}
+        .d-flex.justify-content-between.mb-2
+          span Account Status
+          strong.text-success Active
+
+.mt-4
+  = link_to "Edit User", edit_ops_user_path(@user), class: "btn btn-primary"
+  = link_to "Delete User", ops_user_path(@user), method: :delete, class: "btn btn-outline-danger ms-2", confirm: "Are you sure?"

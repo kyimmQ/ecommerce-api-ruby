@@ -1,0 +1,22 @@
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/bootsnap-1.18.6/ext/bootsnap
+/Users/cac.lp/.rbenv/versions/3.3.8/bin/ruby extconf.rb
+checking for fdatasync() in unistd.h... yes
+checking for whether -D_GNU_SOURCE is accepted as CPPFLAGS... yes
+checking for whether -O3 is accepted as CFLAGS... yes
+checking for whether -std=c99 is accepted as CFLAGS... yes
+creating Makefile
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/bootsnap-1.18.6/ext/bootsnap
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-77e3ma sitelibdir\=./.gem.20250817-31612-77e3ma clean
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/bootsnap-1.18.6/ext/bootsnap
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-77e3ma sitelibdir\=./.gem.20250817-31612-77e3ma
+compiling bootsnap.c
+linking shared-object bootsnap/bootsnap.bundle
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/bootsnap-1.18.6/ext/bootsnap
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-77e3ma sitelibdir\=./.gem.20250817-31612-77e3ma install
+/usr/bin/install -c -m 0755 bootsnap.bundle ./.gem.20250817-31612-77e3ma/bootsnap
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/bootsnap-1.18.6/ext/bootsnap
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-77e3ma sitelibdir\=./.gem.20250817-31612-77e3ma clean

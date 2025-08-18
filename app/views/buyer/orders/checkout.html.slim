@@ -1,0 +1,104 @@
+- content_for :title, "Checkout - ECommerce Store"
+
+h1.mb-4
+  i.bi.bi-credit-card.me-2
+  | Checkout
+
+.row
+  .col-lg-8
+    / Shipping Information
+    .card.mb-4
+      .card-header
+        h5.mb-0
+          i.bi.bi-truck.me-2
+          | Shipping Information
+      .card-body
+        .row
+          .col-md-6
+            p.mb-1
+              strong = current_buyer.name
+            p.mb-1 = current_buyer.email
+            p.mb-1 = current_buyer.phone
+          .col-md-6
+            p.mb-1
+              strong Shipping Address:
+            p.mb-0 = current_buyer.address
+        
+        .mt-3
+          = link_to "Edit Profile", buyer_profile_edit_path, class: "btn btn-outline-primary btn-sm"
+    
+    / Payment Method
+    .card.mb-4
+      .card-header
+        h5.mb-0
+          i.bi.bi-credit-card.me-2
+          | Payment Method
+      .card-body
+        .alert.alert-info
+          i.bi.bi-info-circle.me-2
+          | This is a demo application. No actual payment will be processed.
+        
+        .form-check.mb-3
+          input.form-check-input type="radio" name="payment_method" id="credit_card" checked=true
+          label.form-check-label for="credit_card"
+            i.bi.bi-credit-card.me-2
+            | Credit Card (Demo)
+        
+        .form-check.mb-3
+          input.form-check-input type="radio" name="payment_method" id="paypal"
+          label.form-check-label for="paypal"
+            i.bi.bi-paypal.me-2
+            | PayPal (Demo)
+        
+        .form-check
+          input.form-check-input type="radio" name="payment_method" id="cash_on_delivery"
+          label.form-check-label for="cash_on_delivery"
+            i.bi.bi-cash.me-2
+            | Cash on Delivery
+  
+  .col-lg-4
+    / Order Summary
+    .card.sticky-top
+      .card-header
+        h5.mb-0 Order Summary
+      .card-body
+        / Items
+        - @cart_items.each do |item|
+          .d-flex.justify-content-between.align-items-center.mb-2
+            .flex-grow-1
+              h6.mb-0.small = truncate(item.product_variant.product.name, length: 30)
+              small.text-muted Qty: #{item.quantity}
+            span.text-end $#{number_with_precision(item.quantity * item.product_variant.price, precision: 2)}
+        
+        hr
+        
+        .d-flex.justify-content-between.mb-2
+          span Subtotal
+          span $#{number_with_precision(@total, precision: 2)}
+        
+        .d-flex.justify-content-between.mb-2
+          span Shipping
+          span Free
+        
+        .d-flex.justify-content-between.mb-2
+          span Tax
+          span $0.00
+        
+        hr
+        
+        .d-flex.justify-content-between.mb-3
+          strong Total
+          strong.text-primary $#{number_with_precision(@total, precision: 2)}
+        
+        = form_with url: buyer_orders_path, method: :post, local: true do |form|
+          = form.hidden_field :cart_items, value: @cart_items.pluck(:id)
+          
+          .form-check.mb-3
+            input.form-check-input type="checkbox" id="terms_agreement" required=true
+            label.form-check-label for="terms_agreement"
+              | I agree to the 
+              a href="#" Terms & Conditions
+          
+          = form.submit "Place Order", class: "btn btn-success w-100 btn-lg"
+        
+        = link_to "Back to Cart", buyer_cart_path, class: "btn btn-outline-secondary w-100 mt-2"

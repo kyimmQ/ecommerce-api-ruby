@@ -1,0 +1,75 @@
+- content_for :title, "Products - ECommerce Store"
+
+/ Hero Section
+.bg-primary.text-white.py-5.mb-4
+  .container
+    .row.align-items-center
+      .col-lg-6
+        h1.display-4.fw-bold Welcome to Our Store
+        p.lead Discover amazing products at great prices
+        = link_to "Shop Now", "#products", class: "btn btn-light btn-lg"
+      .col-lg-6.text-center
+        i.bi.bi-shop.display-1
+
+/ Filters Section
+.row.mb-4
+  .col-md-8
+    = form_with url: buyer_products_path, method: :get, local: true, class: "d-flex gap-2" do |form|
+      = form.text_field :search, placeholder: "Search products...", value: params[:search], class: "form-control"
+      = form.submit "Search", class: "btn btn-outline-primary"
+  
+  .col-md-4
+    .dropdown
+      button.btn.btn-outline-secondary.dropdown-toggle.w-100 type="button" data-bs-toggle="dropdown"
+        | Filter by Category
+      ul.dropdown-menu.w-100
+        li
+          = link_to "All Categories", buyer_products_path, class: "dropdown-item"
+        - @categories.each do |category|
+          li
+            = link_to category.name, buyer_products_path(category_id: category.id), class: "dropdown-item"
+
+/ Price Filter
+.row.mb-4
+  .col-md-6
+    = form_with url: buyer_products_path, method: :get, local: true, class: "d-flex gap-2 align-items-end" do |form|
+      .flex-grow-1
+        = form.label :min_price, "Min Price", class: "form-label"
+        = form.number_field :min_price, value: params[:min_price], class: "form-control", step: 0.01
+      .flex-grow-1
+        = form.label :max_price, "Max Price", class: "form-label"
+        = form.number_field :max_price, value: params[:max_price], class: "form-control", step: 0.01
+      = form.submit "Filter", class: "btn btn-outline-primary"
+
+/ Products Grid
+#products
+  - if @products.any?
+    .row
+      - @products.each do |product|
+        .col-lg-3.col-md-4.col-sm-6.mb-4
+          .card.h-100.shadow-sm
+            .card-img-top style="height: 200px; overflow: hidden;"
+              - if product.image_url.present?
+                img src=product.image_url alt=product.name class="w-100 h-100" style="object-fit: cover;"
+              - else
+                .bg-light.d-flex.align-items-center.justify-content-center.h-100
+                  i.bi.bi-image.text-muted style="font-size: 3rem;"
+            
+            .card-body.d-flex.flex-column
+              h5.card-title = product.name
+              p.card-text.text-muted.small = truncate(product.description, length: 100)
+              p.card-text
+                strong.text-primary
+                  - price_range = product.price_range
+                  - if price_range[0] == price_range[1]
+                    | $#{number_with_precision(price_range[0], precision: 2)}
+                  - else
+                    | $#{number_with_precision(price_range[0], precision: 2)} - $#{number_with_precision(price_range[1], precision: 2)}
+              
+              .mt-auto
+                = link_to "View Details", buyer_product_path(product), class: "btn btn-primary w-100"
+  - else
+    .text-center.py-5
+      i.bi.bi-search.display-1.text-muted
+      h3.mt-3 No products found
+      p.text-muted Try adjusting your search criteria or browse all categories.

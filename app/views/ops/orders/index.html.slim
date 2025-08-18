@@ -1,0 +1,65 @@
+- content_for :page_title, "Orders Management"
+
+.d-flex.justify-content-between.align-items-center.mb-4
+  h2.mb-0 Orders Management
+
+/ Filters
+.card.mb-4
+  .card-body
+    = form_with url: ops_orders_path, method: :get, local: true, class: "row g-3" do |form|
+      .col-md-3
+        = form.select :status, options_for_select([['All Statuses', ''], ['Pending', 'pending'], ['Paid', 'paid'], ['Completed', 'completed'], ['Cancelled', 'cancelled'], ['Returned', 'returned']], params[:status]), {}, { class: "form-select" }
+      .col-md-3
+        = form.date_field :start_date, value: params[:start_date], class: "form-control", placeholder: "Start Date"
+      .col-md-3
+        = form.date_field :end_date, value: params[:end_date], class: "form-control", placeholder: "End Date"
+      .col-md-3
+        = form.submit "Filter", class: "btn btn-outline-primary w-100"
+
+/ Orders Table
+.card
+  .card-body
+    - if @orders.any?
+      .table-responsive
+        table.table.table-hover
+          thead
+            tr
+              th Order ID
+              th Customer
+              th Items
+              th Total
+              th Status
+              th Date
+              th Actions
+          tbody
+            - @orders.each do |order|
+              tr
+                td
+                  = link_to "##{order.id}", ops_order_path(order), class: "text-decoration-none fw-bold"
+                td = order.user.name
+                td = order.order_items.sum(:quantity)
+                td $#{number_with_precision(order.total_price, precision: 2)}
+                td
+                  - case order.status
+                  - when 'pending'
+                    span.badge.bg-warning.text-dark Pending
+                  - when 'paid'
+                    span.badge.bg-info Paid
+                  - when 'completed'
+                    span.badge.bg-success Completed
+                  - when 'cancelled'
+                    span.badge.bg-danger Cancelled
+                  - when 'returned'
+                    span.badge.bg-secondary Returned
+                  - else
+                    span.badge.bg-secondary = order.status&.humanize || "Unknown"
+                td = order.created_at.strftime("%m/%d/%Y")
+                td
+                  .btn-group role="group"
+                    = link_to "View", ops_order_path(order), class: "btn btn-sm btn-outline-info"
+                    = link_to "Delete", ops_order_path(order), method: :delete, class: "btn btn-sm btn-outline-danger", confirm: "Are you sure?"
+    - else
+      .text-center.py-5
+        i.bi.bi-receipt.display-1.text-muted
+        h4.mt-3 No orders found
+        p.text-muted Orders will appear here when customers place them

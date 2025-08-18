@@ -1,0 +1,71 @@
+- content_for :title, "Register - ECommerce Store"
+
+.row.justify-content-center
+  .col-md-8.col-lg-6
+    .card.shadow
+      .card-body.p-4
+        .text-center.mb-4
+          h2.card-title Create Your Account
+          p.text-muted Join us today and start shopping!
+        
+        = form_with model: @user, url: buyer_register_path, method: :post, local: true, class: "needs-validation", novalidate: true do |form|
+          .row
+            .col-md-6.mb-3
+              = form.label :name, class: "form-label"
+              = form.text_field :name, class: "form-control #{'is-invalid' if @user.errors[:name].any?}", placeholder: "Full Name", required: true
+              - if @user.errors[:name].any?
+                .invalid-feedback = @user.errors[:name].first
+              - else
+                .invalid-feedback Please provide your full name.
+            
+            .col-md-6.mb-3
+              = form.label :email, class: "form-label"
+              = form.email_field :email, class: "form-control #{'is-invalid' if @user.errors[:email].any?}", placeholder: "Email Address", required: true
+              - if @user.errors[:email].any?
+                .invalid-feedback = @user.errors[:email].first
+              - else
+                .invalid-feedback Please provide a valid email.
+          
+          .row
+            .col-md-6.mb-3
+              = form.label :phone, class: "form-label"
+              = form.telephone_field :phone, class: "form-control #{'is-invalid' if @user.errors[:phone].any?}", placeholder: "Phone Number", required: true
+              - if @user.errors[:phone].any?
+                .invalid-feedback = @user.errors[:phone].first
+              - else
+                .invalid-feedback Please provide your phone number.
+            
+            .col-md-6.mb-3
+              = form.label :password, class: "form-label"
+              = form.password_field :password, class: "form-control #{'is-invalid' if @user.errors[:password].any?}", placeholder: "Password", required: true, minlength: 6
+              - if @user.errors[:password].any?
+                .invalid-feedback = @user.errors[:password].first
+              - else
+                .invalid-feedback Password must be at least 6 characters.
+          
+          .mb-3
+            = form.label :address, class: "form-label"
+            = form.text_area :address, class: "form-control #{'is-invalid' if @user.errors[:address].any?}", placeholder: "Full Address", rows: 3, required: true
+            - if @user.errors[:address].any?
+              .invalid-feedback = @user.errors[:address].first
+            - else
+              .invalid-feedback Please provide your address.
+          
+          .mb-3.form-check
+            input.form-check-input type="checkbox" id="terms" required=true
+            label.form-check-label for="terms"
+              | I agree to the 
+              a href="#" Terms of Service
+              |  and 
+              a href="#" Privacy Policy
+            .invalid-feedback You must agree to the terms.
+          
+          .d-grid
+            = form.submit "Create Account", class: "btn btn-primary btn-lg"
+        
+        hr.my-4
+        
+        .text-center
+          p.mb-0
+            | Already have an account? 
+            = link_to "Sign in here", buyer_login_path, class: "text-decoration-none"

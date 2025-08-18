@@ -120,12 +120,13 @@ def add_category_options(category, option_defs)
   end
 end
 
-def create_product_with_variants(owner:, category:, name:, desc:, options:)
+def create_product_with_variants(owner:, category:, name:, desc:, options:, image_url: nil)
   product = Product.create!(
     name: name,
     description: desc,
     owner: owner,
-    category: category
+    category: category,
+    image_url: image_url
   )
 
   add_category_options(category, options)
@@ -160,9 +161,10 @@ create_product_with_variants(
   category: iphone,
   name: "iPhone 15",
   desc: "Latest Apple iPhone with A17 chip",
+  image_url: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "Color", values: ["Black", "White"] },
-    { name: "Storage", values: ["128GB", "256GB"] }
+    { name: "Color", values: [ "Black", "White" ] },
+    { name: "Storage", values: [ "128GB", "256GB" ] }
   ]
 )
 
@@ -171,9 +173,10 @@ create_product_with_variants(
   category: macbook,
   name: "MacBook Pro 14\"",
   desc: "Apple Silicon laptop for pros",
+  image_url: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "RAM", values: ["16GB", "32GB"] },
-    { name: "Storage", values: ["512GB", "1TB"] }
+    { name: "RAM", values: [ "16GB", "32GB" ] },
+    { name: "Storage", values: [ "512GB", "1TB" ] }
   ]
 )
 
@@ -182,9 +185,10 @@ create_product_with_variants(
   category: android,
   name: "Pixel 8",
   desc: "Android flagship phone from Google",
+  image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "Color", values: ["Obsidian", "Hazel"] },
-    { name: "Storage", values: ["128GB", "256GB"] }
+    { name: "Color", values: [ "Obsidian", "Hazel" ] },
+    { name: "Storage", values: [ "128GB", "256GB" ] }
   ]
 )
 
@@ -193,9 +197,10 @@ create_product_with_variants(
   category: windows,
   name: "Dell XPS 13",
   desc: "High-end Windows laptop",
+  image_url: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "RAM", values: ["8GB", "16GB"] },
-    { name: "Storage", values: ["256GB", "512GB"] }
+    { name: "RAM", values: [ "8GB", "16GB" ] },
+    { name: "Storage", values: [ "256GB", "512GB" ] }
   ]
 )
 
@@ -204,9 +209,10 @@ create_product_with_variants(
   category: menswear,
   name: "Men's Classic Tee",
   desc: "Comfy cotton T-shirt for men",
+  image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "Color", values: ["Black", "Gray"] },
-    { name: "Size", values: ["M", "L", "XL"] }
+    { name: "Color", values: [ "Black", "Gray" ] },
+    { name: "Size", values: [ "M", "L", "XL" ] }
   ]
 )
 
@@ -215,9 +221,10 @@ create_product_with_variants(
   category: womenswear,
   name: "Women's V-Neck Tee",
   desc: "Stylish T-shirt with v-neck cut",
+  image_url: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=500&fit=crop&crop=center",
   options: [
-    { name: "Color", values: ["Red", "White"] },
-    { name: "Size", values: ["S", "M", "L"] }
+    { name: "Color", values: [ "Red", "White" ] },
+    { name: "Size", values: [ "S", "M", "L" ] }
   ]
 )
 

@@ -63,11 +63,11 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def create
-    product = Product.new(product_params.slice(:name, :description))
+    product = Product.new(product_params.slice(:name, :description, :image_url))
     product.owner = current_user
     product.category = Category.find_by(id: product_params[:category])
     if product.save
-      render json: { data: { id: product.id, name: product.name, description: product.description }, message: "Product created successfully." }, status: :created
+      render json: { data: { id: product.id, name: product.name, description: product.description, image_url: product.image_url }, message: "Product created successfully." }, status: :created
     else
       render json: { errors: product.errors }, status: :unprocessable_entity
     end
@@ -81,7 +81,7 @@ class Api::V1::ProductsController < ApplicationController
   private
 
   def product_params
-    params.permit(:name, :category, :description)
+    params.permit(:name, :category, :description, :image_url)
   end
 
   def create_product_params

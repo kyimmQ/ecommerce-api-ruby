@@ -1,0 +1,19 @@
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.7/ext/stringio
+/Users/cac.lp/.rbenv/versions/3.3.8/bin/ruby extconf.rb
+checking for rb_io_mode_t in ruby/io.h... no
+creating Makefile
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-n4qt8t sitelibdir\=./.gem.20250817-31612-n4qt8t clean
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-n4qt8t sitelibdir\=./.gem.20250817-31612-n4qt8t
+compiling stringio.c
+linking shared-object stringio.bundle
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-n4qt8t sitelibdir\=./.gem.20250817-31612-n4qt8t install
+/usr/bin/install -c -m 0755 stringio.bundle ./.gem.20250817-31612-n4qt8t
+
+current directory: /Users/cac.lp/projects/ecommerce_api/vendor/bundle/ruby/3.3.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250817-31612-n4qt8t sitelibdir\=./.gem.20250817-31612-n4qt8t clean

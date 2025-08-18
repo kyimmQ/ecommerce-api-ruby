@@ -1,0 +1,75 @@
+- content_for :title, "Shopping Cart - ECommerce Store"
+
+h1.mb-4
+  i.bi.bi-cart3.me-2
+  | Shopping Cart
+
+- if @cart_items.any?
+  .row
+    .col-lg-8
+      / Cart Items
+      - @cart_items.each do |item|
+        .card.mb-3
+          .card-body
+            .row.align-items-center
+              .col-md-2
+                .rounded style="height: 80px; overflow: hidden;"
+                  - if item.product_variant.product.image_url.present?
+                    img src=item.product_variant.product.image_url alt=item.product_variant.product.name class="w-100 h-100" style="object-fit: cover;"
+                  - else
+                    .bg-light.d-flex.align-items-center.justify-content-center.h-100
+                      i.bi.bi-image.text-muted
+              
+              .col-md-4
+                h6.mb-1 = item.product_variant.product.name
+                p.text-muted.small.mb-1 = item.product_variant.product.category.name
+                - item.product_variant.variant_option_values.each do |vov|
+                  span.badge.bg-light.text-dark.me-1.small = "#{vov.product_option_value.product_option.name}: #{vov.product_option_value.value}"
+              
+              .col-md-2.text-center
+                strong.text-primary $#{number_with_precision(item.product_variant.price, precision: 2)}
+              
+              .col-md-2
+                = form_with url: buyer_update_cart_item_path(item), method: :patch, local: true, class: "d-flex align-items-center" do |form|
+                  = form.number_field :quantity, value: item.quantity, min: 1, max: item.product_variant.stock_quantity, class: "form-control form-control-sm me-2", onchange: "this.form.submit()"
+              
+              .col-md-2.text-end
+                .d-flex.flex-column.align-items-end
+                  strong $#{number_with_precision(item.quantity * item.product_variant.price, precision: 2)}
+                  = link_to buyer_remove_cart_item_path(item), method: :delete, class: "btn btn-sm btn-outline-danger mt-1", confirm: "Remove this item?"
+                    i.bi.bi-trash
+    
+    .col-lg-4
+      / Order Summary
+      .card.sticky-top
+        .card-header
+          h5.mb-0 Order Summary
+        .card-body
+          .d-flex.justify-content-between.mb-2
+            span Subtotal (#{@cart_items.sum(:quantity)} items)
+            strong $#{number_with_precision(@total, precision: 2)}
+          
+          .d-flex.justify-content-between.mb-2
+            span Shipping
+            span Free
+          
+          .d-flex.justify-content-between.mb-2
+            span Tax
+            span Calculated at checkout
+          
+          hr
+          
+          .d-flex.justify-content-between.mb-3
+            strong Total
+            strong.text-primary $#{number_with_precision(@total, precision: 2)}
+          
+          = link_to "Proceed to Checkout", checkout_buyer_orders_path, class: "btn btn-primary w-100 btn-lg"
+          
+          = link_to "Continue Shopping", buyer_products_path, class: "btn btn-outline-secondary w-100 mt-2"
+
+- else
+  .text-center.py-5
+    i.bi.bi-cart-x.display-1.text-muted
+    h3.mt-3 Your cart is empty
+    p.text-muted Start shopping to add items to your cart
+    = link_to "Browse Products", buyer_products_path, class: "btn btn-primary btn-lg"
