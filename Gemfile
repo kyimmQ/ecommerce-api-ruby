@@ -22,7 +22,7 @@ gem "jwt", "~> 3.1", ">= 3.1.2"
 gem "active_model_serializers", "~> 0.10.15"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -33,20 +33,39 @@ gem "bootsnap", require: false
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 
-# Use Slim for templating
-gem "slim-rails"
-
-# Use Bootstrap for styling
-gem "bootstrap", "~> 5.3"
-gem "sassc-rails"
-
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw mswin x64_mingw ], require: "debug/prelude"
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # RSpec testing framework
+  gem "rspec-rails", "~> 6.0"
+
+  # Factory Bot for test data
+  gem "factory_bot_rails", "~> 6.2"
+
+  # Faker for generating fake data
+  gem "faker", "~> 3.2"
+
+  # Database cleaner for test isolation
+  gem "database_cleaner-active_record", "~> 2.1"
+end
+
+group :test do
+  # Shoulda matchers for cleaner tests
+  gem "shoulda-matchers", "~> 5.3"
+
+  # SimpleCov for code coverage
+  gem "simplecov", "~> 0.22", require: false
+
+  # WebMock for stubbing HTTP requests
+  gem "webmock", "~> 3.18"
+
+  # JUnit formatter for CircleCI
+  gem "rspec_junit_formatter", "~> 0.6"
 end

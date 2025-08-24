@@ -1,0 +1,93 @@
+version: 2.1
+
+orbs:
+  ruby: circleci/ruby@2.1.0
+  node: circleci/node@5.1.0
+
+jobs:
+  test:
+    docker:
+      - image: cimg/ruby:3.3.0-node
+      - image: cimg/mysql:8.0
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: ecommerce_api_test
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: password
+    
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      RAILS_ENV: test
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_USERNAME: test_user
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: ecommerce_api_test
+    
+    steps:
+      - checkout
+      
+      # Install dependencies
+      - ruby/install-deps
+      
+      # Wait for database
+      - run:
+          name: Wait for database
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
+      
+      # Setup database
+      - run:
+          name: Database setup
+          command: |
+            bundle exec rails db:create
+            bundle exec rails db:schema:load
+      
+      # Run RSpec tests
+      - run:
+          name: Run RSpec tests
+          command: |
+            bundle exec rspec --format progress \
+                              --format RspecJunitFormatter \
+                              --out test_results/rspec.xml \
+                              --format progress
+      
+      # Run security audit
+      - run:
+          name: Security audit
+          command: bundle exec brakeman -z
+      
+      # Run code style check
+      - run:
+          name: Code style check
+          command: bundle exec rubocop
+      
+      # Store test results
+      - store_test_results:
+          path: test_results
+      
+      # Store coverage results
+      - store_artifacts:
+          path: coverage
+          destination: coverage
+
+  deploy:
+    docker:
+      - image: cimg/ruby:3.3.0
+    steps:
+      - checkout
+      - run:
+          name: Deploy to production
+          command: |
+            echo "Add your deployment commands here"
+            # Example: cap production deploy
+
+workflows:
+  test_and_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main

@@ -1,5 +1,44 @@
 # 🛒 ECommerce API Platform
 
+## Scenario
+
+```
+You're assigned to a new project, and you're helping a tech entrepreneur who wants to launch an online marketplace. 
+She has a vision to create a comprehensive ecommerce platform that serves both customers and store owners. 
+Your task is to work on the core user stories:
+- Store owners can register and manage their product inventory
+- Customers can browse products, add them to cart, and place orders
+- Admins can oversee the entire platform and manage users
+```
+
+Product's required properties
+
+```
+- Name and Description
+- Category (Electronics, Fashion, etc.)
+- Product Variants (Color, Size, Storage, RAM, etc.)
+- Price per variant
+- Stock quantity
+- Images
+- Manufacturing details
+```
+
+### **Project members**
+
+- `Tech Entrepreneur (Product Owner + Business Strategy)`
+- `UX/UI Designer`
+- `Full-Stack Software Engineer`
+- `DevOps Engineer`
+
+### **Situation**
+
+- The UX/UI Designer has created modern, responsive web interfaces using Bootstrap 5 for both customer-facing and admin dashboards.
+- The entrepreneur wants a scalable solution that can handle both web traffic and mobile app integration through RESTful APIs.
+- The platform needs to support multiple user roles with different permission levels and secure authentication.
+- To ensure the delivered product's quality and scalability, you're required to implement comprehensive testing, CI/CD pipelines, and follow Rails best practices.
+
+---
+
 A full-featured ecommerce platform built with Ruby on Rails that provides both web interfaces and RESTful APIs for managing an online store. The application supports multiple user types with role-based access control and offers comprehensive product management, shopping, and order processing capabilities.
 
 ## 📋 Features
@@ -220,13 +259,127 @@ development:
 
 ## 🧪 Testing
 
+This application uses **RSpec** for testing with comprehensive test coverage and CI/CD integration.
+
+### Test Suite Setup
+
+The testing framework includes:
+- **RSpec** - Main testing framework
+- **FactoryBot** - Test data generation
+- **Faker** - Realistic fake data
+- **Shoulda Matchers** - Clean model validations testing
+- **SimpleCov** - Code coverage reporting
+- **WebMock** - HTTP request stubbing
+- **Database Cleaner** - Test isolation
+
+### Running Tests
+
 ```bash
-# Run the test suite
-rails test
+# Run the entire test suite
+bin/rspec
 
 # Run specific test files
-rails test test/models/user_test.rb
-rails test test/controllers/products_controller_test.rb
+bin/rspec spec/models/user_spec.rb
+bin/rspec spec/controllers/api/v1/products_controller_spec.rb
+
+# Run tests with coverage report
+COVERAGE=true bin/rspec
+
+# Run tests matching a specific pattern
+bin/rspec --tag focus
+bin/rspec spec/models/
+
+# Run tests in documentation format
+bin/rspec --format documentation
+```
+
+### Test Categories
+
+**Model Tests** (`spec/models/`)
+- Validation testing
+- Association testing  
+- Method behavior testing
+- Business logic testing
+
+**Controller Tests** (`spec/controllers/`)
+- API endpoint testing
+- Authentication testing
+- Authorization testing
+- Response format testing
+
+**Integration Tests** (`spec/requests/`)
+- End-to-end workflow testing
+- Multi-controller interactions
+
+### Code Coverage
+
+Code coverage reports are generated automatically:
+```bash
+# Generate coverage report
+COVERAGE=true bin/rspec
+
+# View coverage report
+open coverage/index.html
+```
+
+### Continuous Integration
+
+**CircleCI Configuration** (`.circleci/config.yml`)
+- Automated testing on every commit
+- MySQL database setup
+- Security auditing with Brakeman
+- Code style checking with RuboCop
+- Test result reporting
+- Coverage reporting
+
+**CI/CD Pipeline:**
+1. **Test** - Run RSpec test suite
+2. **Security Audit** - Brakeman security scan
+3. **Code Style** - RuboCop linting
+4. **Deploy** - Automated deployment (main branch only)
+
+### Writing Tests
+
+**Model Test Example:**
+```ruby
+RSpec.describe User, type: :model do
+  describe 'validations' do
+    it { should validate_presence_of(:name) }
+    it { should validate_uniqueness_of(:email) }
+  end
+
+  describe '#can?' do
+    let(:user) { create(:user) }
+    
+    it 'returns true when user has permission' do
+      # Test implementation
+    end
+  end
+end
+```
+
+**Controller Test Example:**
+```ruby
+RSpec.describe Api::V1::ProductsController, type: :controller do
+  describe 'GET #index' do
+    it 'returns successful response' do
+      get :index
+      expect(response).to have_http_status(:ok)
+    end
+  end
+end
+```
+
+### Factory Usage
+
+```ruby
+# Create test data with FactoryBot
+user = create(:user)
+product = create(:product, :with_variants)
+buyer = create(:user, :buyer)
+
+# Build without saving
+user = build(:user, name: 'Test User')
 ```
 
 ## 📦 Deployment

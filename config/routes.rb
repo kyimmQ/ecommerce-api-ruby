@@ -1,73 +1,8 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Buyer (Customer) Web Interface
-  namespace :buyer do
-    root "products#index"
-
-    # Authentication
-    get "login", to: "auth#login"
-    post "login", to: "auth#create_session"
-    get "register", to: "auth#register"
-    post "register", to: "auth#create_account"
-    delete "logout", to: "auth#logout"
-
-    # Products
-    resources :products, only: [ :index, :show ] do
-      collection do
-        get "category/:category_id", to: "products#by_category", as: :category
-      end
-    end
-
-    # Cart
-    get "cart", to: "cart#index"
-    post "cart/add", to: "cart#add_item"
-    patch "cart/:id", to: "cart#update_item", as: :update_cart_item
-    delete "cart/:id", to: "cart#remove_item", as: :remove_cart_item
-
-    # Orders
-    resources :orders, only: [ :index, :show, :create ] do
-      collection do
-        get "checkout", to: "orders#checkout"
-      end
-    end
-
-    # Profile
-    get "profile", to: "profile#show"
-    get "profile/edit", to: "profile#edit"
-    patch "profile", to: "profile#update"
-  end
-
-  # Admin (Ops) Web Interface
-  namespace :ops do
-    root "dashboard#index"
-
-    # Authentication
-    get "login", to: "auth#login"
-    post "login", to: "auth#create_session"
-    delete "logout", to: "auth#logout"
-
-    # Dashboard
-    get "dashboard", to: "dashboard#index"
-
-    # Products Management
-    resources :products
-
-    # Categories Management
-    resources :categories
-
-    # Orders Management
-    resources :orders, only: [ :index, :show, :update, :destroy ]
-
-    # Users Management
-    resources :users, only: [ :index, :show, :edit, :update, :destroy ]
-  end
-
-  # Redirect root to buyer interface
-  root "buyer/products#index"
-
   namespace :api do
     namespace :v1 do
+
       post "auth/login", to: "auth#login"
       post "auth/register", to: "auth#register"
 

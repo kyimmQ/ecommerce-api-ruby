@@ -1,10 +1,6 @@
-class ApplicationController < ActionController::Base
+class ApplicationController < ActionController::API
   include ExceptionHandler
-
-  # Enable CSRF protection for web requests, skip for API requests
-  protect_from_forgery with: :exception, unless: :api_request?
-
-  before_action :authorize_request, if: :api_request?
+  before_action :authorize_request
 
   def authorize_request
     header = request.headers["Authorization"]
@@ -20,17 +16,7 @@ class ApplicationController < ActionController::Base
 
   def authorize!(permission_name)
     unless current_user&.can?(permission_name)
-      if api_request?
-        render json: { error: "Unauthorize for this action" }, status: :unauthorized
-      else
-        redirect_to root_path, alert: "Unauthorized for this action"
-      end
+      render json: {error: "Unauthorize for this action"}, status: :unauthorized
     end
-  end
-
-  private
-
-  def api_request?
-    request.path.start_with?("/api/")
   end
 end

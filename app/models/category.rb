@@ -7,13 +7,9 @@ class Category < ApplicationRecord
   has_many :category_product_options, dependent: :destroy
   has_many :product_options, through: :category_product_options
   has_many :subcategories, class_name: "Category", foreign_key: "parent_id", dependent: :destroy
-  has_many :children, class_name: "Category", foreign_key: "parent_id", dependent: :destroy
   belongs_to :parent, class_name: "Category", optional: true
 
   validates :name, :description, presence: true
-
-  # Get root categories (categories without parent)
-  scope :roots, -> { where(parent_id: nil) }
 
   # Refractor due to N+1 problem
   def self.recursive_tree
@@ -59,7 +55,7 @@ class Category < ApplicationRecord
       id: curr_category.id,
       name: curr_category.name,
       description: curr_category.description,
-      subcategory: (grouped[curr_category.id] || []).map { |subcategory| build_tree subcategory, grouped }
+      subcategory: (grouped[curr_category.id] || []).map { |subcategory| build_tree subcategory, grouped },
     }
   end
 
@@ -67,4 +63,5 @@ class Category < ApplicationRecord
     default_option = ProductOption.find_or_create_by!(name: "Type")
     CategoryProductOption.find_or_create_by!(category: self, product_option: default_option)
   end
+
 end
